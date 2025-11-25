@@ -1,1 +1,282 @@
-# droyguay.github.io
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pratique des multiplications</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f7fb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .app {
+      background: #ffffff;
+      padding: 24px 28px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      max-width: 480px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      margin: 0 0 16px;
+      text-align: center;
+    }
+
+    .section-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #555;
+    }
+
+    .digits-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+      justify-content: center;
+    }
+
+    .digit-btn {
+      border: 1px solid #d0d7e2;
+      background: #f3f5fa;
+      border-radius: 999px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      min-width: 32px;
+      text-align: center;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease,
+        border-color 0.1s ease;
+    }
+
+    .digit-btn.active {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .digit-btn:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    .question-area {
+      margin-top: 12px;
+      margin-bottom: 16px;
+      text-align: center;
+      font-size: 1.2rem;
+    }
+
+    .question {
+      font-size: 1.6rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .input-row {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      align-items: center;
+    }
+
+    #answer {
+      padding: 8px 10px;
+      font-size: 1.1rem;
+      width: 100px;
+      text-align: center;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    #answer:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+    }
+
+    .feedback {
+      margin-top: 10px;
+      text-align: center;
+      min-height: 1.5em;
+      font-size: 1.4rem;
+    }
+
+    .feedback-text {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    .counter {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .brain {
+      margin-top: 8px;
+      text-align: center;
+      font-size: 2rem;
+    }
+
+    .warning {
+      text-align: center;
+      color: #b91c1c;
+      font-size: 0.9rem;
+      min-height: 1.3em;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>Pratique des multiplications</h1>
+
+    <div>
+      <div class="section-title">Choisis les chiffres à pratiquer :</div>
+      <div class="digits-container" id="digitButtons"></div>
+      <div class="warning" id="digitWarning"></div>
+    </div>
+
+    <div class="question-area">
+      <div class="section-title">Question :</div>
+      <div class="question" id="questionText">Sélectionne d'abord au moins un chiffre.</div>
+      <div class="input-row">
+        <input
+          type="number"
+          id="answer"
+          autocomplete="off"
+          inputmode="numeric"
+          placeholder="Réponse"
+          disabled
+        />
+      </div>
+      <div class="feedback" id="feedbackEmoji"></div>
+      <div class="feedback-text" id="feedbackText"></div>
+    </div>
+
+    <div class="counter">
+      Score : <span id="score">0</span> / 50
+      <div class="brain" id="brainEmoji"></div>
+    </div>
+  </div>
+
+  <script>
+    const digitButtonsContainer = document.getElementById("digitButtons");
+    const digitWarning = document.getElementById("digitWarning");
+    const questionText = document.getElementById("questionText");
+    const answerInput = document.getElementById("answer");
+    const feedbackEmoji = document.getElementById("feedbackEmoji");
+    const feedbackText = document.getElementById("feedbackText");
+    const scoreSpan = document.getElementById("score");
+    const brainEmoji = document.getElementById("brainEmoji");
+
+    const selectedDigits = new Set();
+    let currentA = null;
+    let currentB = null;
+    let score = 0;
+
+    // Crée les boutons 0 à 9
+    for (let i = 0; i <= 9; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = i;
+      btn.className = "digit-btn";
+      btn.dataset.digit = i.toString();
+      btn.addEventListener("click", () => toggleDigit(btn, i));
+      digitButtonsContainer.appendChild(btn);
+    }
+
+    function toggleDigit(button, digit) {
+      if (selectedDigits.has(digit)) {
+        selectedDigits.delete(digit);
+        button.classList.remove("active");
+      } else {
+        selectedDigits.add(digit);
+        button.classList.add("active");
+      }
+
+      if (selectedDigits.size === 0) {
+        digitWarning.textContent = "Sélectionne au moins un chiffre pour commencer.";
+        questionText.textContent = "Sélectionne d'abord au moins un chiffre.";
+        answerInput.disabled = true;
+      } else {
+        digitWarning.textContent = "";
+        answerInput.disabled = false;
+        generateQuestion();
+        answerInput.focus();
+      }
+    }
+
+    function randomFromSet(set) {
+      const arr = Array.from(set);
+      const idx = Math.floor(Math.random() * arr.length);
+      return arr[idx];
+    }
+
+    function generateQuestion() {
+      if (selectedDigits.size === 0) {
+        return;
+      }
+
+      currentA = randomFromSet(selectedDigits); // chiffre choisi
+      currentB = Math.floor(Math.random() * 11); // 0 à 10
+
+      questionText.textContent = `${currentA} × ${currentB} = ?`;
+      feedbackEmoji.textContent = "";
+      feedbackText.textContent = "";
+      answerInput.value = "";
+    }
+
+    function checkAnswer() {
+      if (currentA === null || currentB === null) return;
+      const userValue = parseInt(answerInput.value, 10);
+
+      if (Number.isNaN(userValue)) {
+        feedbackEmoji.textContent = "";
+        feedbackText.textContent = "Écris un nombre puis appuie sur Entrée.";
+        return;
+      }
+
+      const correct = currentA * currentB;
+
+      if (userValue === correct) {
+        score++;
+        scoreSpan.textContent = score.toString();
+        feedbackEmoji.textContent = "😊";
+        feedbackText.textContent = "Bravo, bonne réponse !";
+
+        if (score >= 50) {
+          brainEmoji.textContent = "🧠✨";
+        }
+
+        generateQuestion();
+      } else {
+        feedbackEmoji.textContent = "🙃";
+        feedbackText.textContent = `Non, ${currentA} × ${currentB} = ${correct}. Essaie encore !`;
+        // On garde la même question pour qu'il/elle puisse réessayer
+        answerInput.select();
+      }
+    }
+
+    // Validation avec la touche Entrée
+    answerInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        checkAnswer();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Pratique des multiplications</title>
+  <title>Pratique des multiplications et divisions</title>
   <style>
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -143,7 +143,15 @@
 </head>
 <body>
   <div class="app">
-    <h1>Pratique des multiplications</h1>
+    <h1>Pratique des multiplications et divisions</h1>
+
+    <div>
+      <div class="section-title">Opération :</div>
+      <div class="digits-container" id="operationButtons">
+        <button type="button" class="digit-btn active" id="multiplyBtn">Multiplication</button>
+        <button type="button" class="digit-btn" id="divideBtn">Division</button>
+      </div>
+    </div>
 
     <div>
       <div class="section-title">Choisis les chiffres à pratiquer :</div>
@@ -183,10 +191,13 @@
     const feedbackText = document.getElementById("feedbackText");
     const scoreSpan = document.getElementById("score");
     const brainEmoji = document.getElementById("brainEmoji");
+    const multiplyBtn = document.getElementById("multiplyBtn");
+    const divideBtn = document.getElementById("divideBtn");
 
     const selectedDigits = new Set();
     let currentA = null;
     let currentB = null;
+    let currentOperation = "multiply";
     let score = 0;
 
     // Crée les boutons 0 à 9
@@ -226,15 +237,31 @@
       return arr[idx];
     }
 
+    function setOperation(operation) {
+      currentOperation = operation;
+      multiplyBtn.classList.toggle("active", operation === "multiply");
+      divideBtn.classList.toggle("active", operation === "divide");
+
+      if (selectedDigits.size > 0) {
+        generateQuestion();
+        answerInput.focus();
+      }
+    }
+
     function generateQuestion() {
       if (selectedDigits.size === 0) {
         return;
       }
 
       currentA = randomFromSet(selectedDigits); // chiffre choisi
-      currentB = Math.floor(Math.random() * 11); // 0 à 10
-
-      questionText.textContent = `${currentA} × ${currentB} = ?`;
+      if (currentOperation === "multiply") {
+        currentB = Math.floor(Math.random() * 11); // 0 à 10
+        questionText.textContent = `${currentA} × ${currentB} = ?`;
+      } else {
+        currentB = Math.floor(Math.random() * 10) + 1; // 1 à 10 (évite /0)
+        const dividend = currentA * currentB;
+        questionText.textContent = `${dividend} ÷ ${currentB} = ?`;
+      }
       feedbackEmoji.textContent = "";
       feedbackText.textContent = "";
       answerInput.value = "";
@@ -250,7 +277,7 @@
         return;
       }
 
-      const correct = currentA * currentB;
+      const correct = currentOperation === "multiply" ? currentA * currentB : currentA;
 
       if (userValue === correct) {
         score++;
@@ -265,11 +292,19 @@
         generateQuestion();
       } else {
         feedbackEmoji.textContent = "🙃";
-        feedbackText.textContent = `Non, ${currentA} × ${currentB} = ${correct}. Essaie encore !`;
+        if (currentOperation === "multiply") {
+          feedbackText.textContent = `Non, ${currentA} × ${currentB} = ${correct}. Essaie encore !`;
+        } else {
+          const dividend = currentA * currentB;
+          feedbackText.textContent = `Non, ${dividend} ÷ ${currentB} = ${correct}. Essaie encore !`;
+        }
         // On garde la même question pour qu'il/elle puisse réessayer
         answerInput.select();
       }
     }
+
+    multiplyBtn.addEventListener("click", () => setOperation("multiply"));
+    divideBtn.addEventListener("click", () => setOperation("divide"));
 
     // Validation avec la touche Entrée
     answerInput.addEventListener("keydown", (event) => {

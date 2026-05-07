@@ -197,7 +197,7 @@
     const selectedDigits = new Set();
     let currentA = null;
     let currentB = null;
-    let currentDividend = null;
+    let currentDivisionDividend = null;
     let currentOperation = "multiply";
     let score = 0;
 
@@ -242,6 +242,10 @@
       currentOperation = operation;
       multiplyBtn.classList.toggle("active", operation === "multiply");
       divideBtn.classList.toggle("active", operation === "divide");
+      document.title =
+        operation === "multiply"
+          ? "Pratique des multiplications et divisions - mode multiplication"
+          : "Pratique des multiplications et divisions - mode division";
 
       if (selectedDigits.size > 0) {
         generateQuestion();
@@ -257,12 +261,12 @@
       currentA = randomFromSet(selectedDigits); // chiffre choisi
       if (currentOperation === "multiply") {
         currentB = Math.floor(Math.random() * 11); // 0 à 10
-        currentDividend = null;
+        currentDivisionDividend = null;
         questionText.textContent = `${currentA} × ${currentB} = ?`;
       } else {
         currentB = Math.floor(Math.random() * 10) + 1; // 1 à 10 (évite /0)
-        currentDividend = currentA * currentB;
-        questionText.textContent = `${currentDividend} ÷ ${currentB} = ?`;
+        currentDivisionDividend = currentA * currentB;
+        questionText.textContent = `${currentDivisionDividend} ÷ ${currentB} = ?`;
       }
       feedbackEmoji.textContent = "";
       feedbackText.textContent = "";
@@ -297,7 +301,7 @@
         if (currentOperation === "multiply") {
           feedbackText.textContent = `Non, ${currentA} × ${currentB} = ${correct}. Essaie encore !`;
         } else {
-          feedbackText.textContent = `Non, ${currentDividend} ÷ ${currentB} = ${correct}. Essaie encore !`;
+          feedbackText.textContent = `Non, ${currentDivisionDividend} ÷ ${currentB} = ${correct}. Essaie encore !`;
         }
         // On garde la même question pour qu'il/elle puisse réessayer
         answerInput.select();

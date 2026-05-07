@@ -197,6 +197,7 @@
     const selectedDigits = new Set();
     let currentA = null;
     let currentB = null;
+    let currentDividend = null;
     let currentOperation = "multiply";
     let score = 0;
 
@@ -256,11 +257,12 @@
       currentA = randomFromSet(selectedDigits); // chiffre choisi
       if (currentOperation === "multiply") {
         currentB = Math.floor(Math.random() * 11); // 0 à 10
+        currentDividend = null;
         questionText.textContent = `${currentA} × ${currentB} = ?`;
       } else {
         currentB = Math.floor(Math.random() * 10) + 1; // 1 à 10 (évite /0)
-        const dividend = currentA * currentB;
-        questionText.textContent = `${dividend} ÷ ${currentB} = ?`;
+        currentDividend = currentA * currentB;
+        questionText.textContent = `${currentDividend} ÷ ${currentB} = ?`;
       }
       feedbackEmoji.textContent = "";
       feedbackText.textContent = "";
@@ -295,8 +297,7 @@
         if (currentOperation === "multiply") {
           feedbackText.textContent = `Non, ${currentA} × ${currentB} = ${correct}. Essaie encore !`;
         } else {
-          const dividend = currentA * currentB;
-          feedbackText.textContent = `Non, ${dividend} ÷ ${currentB} = ${correct}. Essaie encore !`;
+          feedbackText.textContent = `Non, ${currentDividend} ÷ ${currentB} = ${correct}. Essaie encore !`;
         }
         // On garde la même question pour qu'il/elle puisse réessayer
         answerInput.select();

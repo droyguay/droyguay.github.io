@@ -235,7 +235,7 @@
     function randomFromSet(set) {
       const arr = Array.from(set);
       const idx = Math.floor(Math.random() * arr.length);
-      return arr[idx];
+      return Number(arr[idx]);
     }
 
     function setOperation(operation) {

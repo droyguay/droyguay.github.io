@@ -275,7 +275,7 @@
 
     function checkAnswer() {
       if (currentA === null || currentB === null) return;
-      const userValue = parseInt(answerInput.value, 15);
+      const userValue = parseInt(answerInput.value, 10);
 
       if (Number.isNaN(userValue)) {
         feedbackEmoji.textContent = "";

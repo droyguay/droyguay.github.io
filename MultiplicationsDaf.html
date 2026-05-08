@@ -202,7 +202,7 @@
     let score = 0;
 
     // Crée les boutons 0 à 9
-    for (let i = 0; i <= 15; i++) {
+    for (let i = 0; i <= 10; i++) {
       const btn = document.createElement("button");
       btn.textContent = i;
       btn.className = "digit-btn";
@@ -260,11 +260,11 @@
 
       currentA = randomFromSet(selectedDigits); // chiffre choisi
       if (currentOperation === "multiply") {
-        currentB = Math.floor(Math.random() * 16); // 0 à 10
+        currentB = Math.floor(Math.random() * 11); // 0 à 10
         currentDivisionDividend = null;
         questionText.textContent = `${currentA} × ${currentB} = ?`;
       } else {
-        currentB = Math.floor(Math.random() * 15) + 1; // 1 à 10 (évite /0)
+        currentB = Math.floor(Math.random() * 10) + 1; // 1 à 10 (évite /0)
         currentDivisionDividend = currentA * currentB;
         questionText.textContent = `${currentDivisionDividend} ÷ ${currentB} = ?`;
       }
